@@ -6,7 +6,7 @@ import {
   SubjectsApi,
   TeachersApi,
 } from "./typesApi";
-import { Grades } from "./types";
+import { Grade, Grades } from "./types";
 import moment from "moment";
 
 const isDaysAgo = (days: number, date: string) => {
@@ -44,7 +44,7 @@ const Librus = async (username: string, password: string) => {
     return true;
   };
 
-  const getGrades = async (daysForLatest?: number) => {
+  const getGrades = async (lastXDays?: number) => {
     const res = await getApi("Grades");
     const data: GradesApi = res.data;
     const gradesFinal: Grades = {};
@@ -75,7 +75,7 @@ const Librus = async (username: string, password: string) => {
       if (!gradesFinal[semester]) gradesFinal[semester] = {};
       if (!gradesFinal[semester][subject]) gradesFinal[semester][subject] = [];
 
-      const grade = {
+      const grade: Grade = {
         grade: e.Grade,
         weight: category?.Weight as number,
         category: category?.Name as string,
@@ -86,11 +86,13 @@ const Librus = async (username: string, password: string) => {
         isFinalProposition: e.IsFinalProposition,
         isSemester: e.IsSemester,
         isSemesterProposition: e.IsSemesterProposition,
+        toAverage: category?.CountToTheAverage as boolean,
       };
-      if (daysForLatest) {
-        if (isDaysAgo(daysForLatest, grade.date)) {
-          if (!gradesFinal.latest) gradesFinal.latest = [];
-          gradesFinal.latest.push(grade);
+      if (lastXDays) {
+        if (isDaysAgo(lastXDays, grade.date)) {
+          if (!gradesFinal.latest) gradesFinal.latest = {};
+          if (!gradesFinal.latest[subject]) gradesFinal.latest[subject] = [];
+          gradesFinal.latest[subject].push(grade);
         }
       }
       gradesFinal[semester][subject].push(grade);
@@ -122,7 +124,7 @@ const Librus = async (username: string, password: string) => {
 
   const init = await login();
   if (!init) throw new Error("Failed to auth");
-  else return { getGrades };
+  else return { getGrades, getAnything };
 };
 
 export default Librus;

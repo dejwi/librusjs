@@ -1,4 +1,4 @@
-interface grade {
+export interface Grade {
   grade: string;
   weight: number;
   category: string;
@@ -9,10 +9,11 @@ interface grade {
   isFinalProposition: boolean;
   isSemester: boolean;
   isSemesterProposition: boolean;
+  toAverage: boolean;
 }
 
 export interface Grades {
-  latest?: grade[];
+  latest?: { [subject: string]: grade[] };
   [semester: string]: {
     [subject: string]: grade[];
   };

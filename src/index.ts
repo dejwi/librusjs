@@ -21,11 +21,6 @@ const Librus = async (username: string, password: string) => {
   let categoriesApi: CategoriesApi | null = null;
   let commentsApi: CommentsApi | null = null;
 
-  const getApi = (url: string) =>
-    axios.get(`https://api.librus.pl/2.0/${url}`, {
-      headers: { Authorization: token },
-    });
-
   const login = async () => {
     const res = await axios.post(
       "https://api.librus.pl/OAuth/Token",
@@ -44,9 +39,15 @@ const Librus = async (username: string, password: string) => {
     return true;
   };
 
+  const getApi = async (url: string) => {
+    const res = await axios.get(`https://api.librus.pl/2.0/${url}`, {
+      headers: { Authorization: token },
+    });
+    return res.data;
+  };
+
   const getGrades = async (lastXDays?: number) => {
-    const res = await getApi("Grades");
-    const data: GradesApi = res.data;
+    const data: GradesApi = await getApi("Grades");
     const gradesFinal: Grades = {};
     await Promise.all([
       fillCategories(),
@@ -63,6 +64,7 @@ const Librus = async (username: string, password: string) => {
       );
       const teacherData = teachersApi?.Users.find((t) => t.Id === e.AddedBy.Id);
       const teacher = teacherData?.FirstName + " " + teacherData?.LastName;
+
       let comment: string;
       if (e.Comments) {
         comment = commentsApi?.Comments.find(
@@ -100,31 +102,26 @@ const Librus = async (username: string, password: string) => {
     return gradesFinal;
   };
 
-  const getAnything = async (url: string) => {
-    const res = await getApi(url);
-    return res.data;
-  };
-
   const fillSubjects = async () => {
     if (subjectsApi) return;
-    subjectsApi = await getAnything("Subjects");
+    subjectsApi = await getApi("Subjects");
   };
   const fillTeachers = async () => {
     if (teachersApi) return;
-    teachersApi = await getAnything("Users");
+    teachersApi = await getApi("Users");
   };
   const fillCategories = async () => {
     if (categoriesApi) return;
-    categoriesApi = await getAnything("Grades/Categories");
+    categoriesApi = await getApi("Grades/Categories");
   };
   const fillComments = async () => {
     if (commentsApi) return;
-    commentsApi = await getAnything("Grades/Comments");
+    commentsApi = await getApi("Grades/Comments");
   };
 
   const init = await login();
   if (!init) throw new Error("Failed to auth");
-  else return { getGrades, getAnything };
+  else return { getGrades };
 };
 
 export default Librus;

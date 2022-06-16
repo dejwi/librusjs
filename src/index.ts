@@ -42,10 +42,12 @@ const Librus = async (username: string, password: string) => {
     const res = await getApi("Grades");
     const data: GradesApi = res.data;
     const gradesFinal: Grades = {};
-    await fillCategories();
-    await fillComments();
-    await fillSubjects();
-    await fillTeachers();
+    await Promise.all([
+      fillCategories(),
+      fillComments(),
+      fillSubjects(),
+      fillTeachers(),
+    ]);
 
     data.Grades.forEach((e) => {
       const subject = subjectsApi?.Subjects.find((s) => s.Id === e.Subject.Id)

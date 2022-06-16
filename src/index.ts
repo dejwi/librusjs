@@ -7,6 +7,12 @@ import {
   TeachersApi,
 } from "./typesApi";
 import { Grades } from "./types";
+import moment from "moment";
+
+const isDaysAgo = (days: number, date: string) => {
+  const xAgo = moment().subtract(days, "d");
+  return moment(date).isAfter(xAgo);
+};
 
 const Librus = async (username: string, password: string) => {
   let token = "";
@@ -38,7 +44,7 @@ const Librus = async (username: string, password: string) => {
     return true;
   };
 
-  const getGrades = async () => {
+  const getGrades = async (daysForLatest?: number) => {
     const res = await getApi("Grades");
     const data: GradesApi = res.data;
     const gradesFinal: Grades = {};
@@ -69,7 +75,7 @@ const Librus = async (username: string, password: string) => {
       if (!gradesFinal[semester]) gradesFinal[semester] = {};
       if (!gradesFinal[semester][subject]) gradesFinal[semester][subject] = [];
 
-      gradesFinal[semester][subject].push({
+      const grade = {
         grade: e.Grade,
         weight: category?.Weight as number,
         category: category?.Name as string,
@@ -80,7 +86,14 @@ const Librus = async (username: string, password: string) => {
         isFinalProposition: e.IsFinalProposition,
         isSemester: e.IsSemester,
         isSemesterProposition: e.IsSemesterProposition,
-      });
+      };
+      if (daysForLatest) {
+        if (isDaysAgo(daysForLatest, grade.date)) {
+          if (!gradesFinal.latest) gradesFinal.latest = [];
+          gradesFinal.latest.push(grade);
+        }
+      }
+      gradesFinal[semester][subject].push(grade);
     });
     return gradesFinal;
   };

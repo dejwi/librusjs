@@ -1,0 +1,31 @@
+{
+  "name": "librusjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dejwi/librusjs.git"
+  },
+  "keywords": [],
+  "author": "Dawid Krasowski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dejwi/librusjs/issues"
+  },
+  "homepage": "https://github.com/dejwi/librusjs#readme",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "axios": "^0.27.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.3"
+  }
+}

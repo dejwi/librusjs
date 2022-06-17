@@ -126,3 +126,11 @@ export interface SchoolFreeDaysApi {
     DateTo: string;
   }[];
 }
+
+export interface ClassesApi {
+  Class: {
+    Id: number;
+    Number: number;
+    Symbol: string;
+  };
+}

@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   CategoriesApi,
+  ClassesApi,
   ClassroomsApi,
   CommentsApi,
   GradesApi,
@@ -9,7 +10,13 @@ import {
   TeachersApi,
   TimetablesApi,
 } from "./typesApi";
-import { Grade, Grades, Timetable, TimetableLesson } from "./types";
+import {
+  AccountInfo,
+  Grade,
+  Grades,
+  Timetable,
+  TimetableLesson,
+} from "./types";
 import moment from "moment";
 
 const isDaysAgo = (days: number, date: string) => {
@@ -19,12 +26,13 @@ const isDaysAgo = (days: number, date: string) => {
 
 const Librus = async (username: string, password: string) => {
   let token = "";
-  let subjectsApi: SubjectsApi | null = null;
-  let teachersApi: TeachersApi | null = null;
-  let categoriesApi: CategoriesApi | null = null;
-  let commentsApi: CommentsApi | null = null;
-  let classroomsApi: ClassroomsApi | null = null;
-  let freeDaysApi: SchoolFreeDaysApi | null = null;
+  let subjectsApi: SubjectsApi;
+  let teachersApi: TeachersApi;
+  let categoriesApi: CategoriesApi;
+  let commentsApi: CommentsApi;
+  let classroomsApi: ClassroomsApi;
+  let freeDaysApi: SchoolFreeDaysApi;
+  let classesApi: ClassesApi;
 
   const login = async () => {
     const res = await axios.post(
@@ -174,6 +182,21 @@ const Librus = async (username: string, password: string) => {
     return timetableFinal;
   };
 
+  const getLuckyNumber = async () => {
+    const data = await getApi("LuckyNumbers");
+    return data.LuckyNumber.LuckyNumber as number;
+  };
+  const getAccountInfo = async (): Promise<AccountInfo> => {
+    const data = await getApi("Me");
+
+    await fillClasses();
+    const usrClass = classesApi.Class.Number + classesApi.Class.Symbol;
+
+    const { FirstName, LastName, Email, Login } = data.Me.Account;
+    const FullName = FirstName + " " + LastName;
+    return { FullName, FirstName, LastName, Email, Login, Class: usrClass };
+  };
+
   const fillSubjects = async () => {
     if (subjectsApi) return;
     subjectsApi = await getApi("Subjects");
@@ -198,10 +221,15 @@ const Librus = async (username: string, password: string) => {
     if (freeDaysApi) return;
     freeDaysApi = await getApi("SchoolFreeDays");
   };
+  const fillClasses = async () => {
+    if (classesApi) return;
+    classesApi = await getApi("Classes");
+  };
 
   const init = await login();
   if (!init) throw new Error("Failed to auth");
-  else return { getGrades, getApi, getTimetable };
+  else
+    return { getGrades, getApi, getTimetable, getLuckyNumber, getAccountInfo };
 };
 
 export default Librus;

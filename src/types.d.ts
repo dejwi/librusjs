@@ -40,3 +40,12 @@ export interface TimetableFreeDay {
 export interface Timetable {
   [day: string]: TimetableLesson[] | TimetableFreeDay;
 }
+
+export interface AccountInfo {
+  FullName: string;
+  FirstName: string;
+  LastName: string;
+  Email: string;
+  Login: string;
+  Class: string;
+}

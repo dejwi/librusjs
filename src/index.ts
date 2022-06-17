@@ -49,7 +49,7 @@ const Librus = async (username: string, password: string) => {
     return res.data;
   };
 
-  const getGrades = async (lastXDays?: number) => {
+  const getGrades = async (getMostRecent?: boolean, lastXDays?: number) => {
     const data: GradesApi = await getApi("Grades");
     const gradesFinal: Grades = {};
     await Promise.all([
@@ -58,6 +58,7 @@ const Librus = async (username: string, password: string) => {
       fillSubjects(),
       fillTeachers(),
     ]);
+    let mostRecent: Grade;
 
     data.Grades.forEach((e) => {
       const subject = subjectsApi?.Subjects.find((s) => s.Id === e.Subject.Id)
@@ -99,6 +100,14 @@ const Librus = async (username: string, password: string) => {
           if (!gradesFinal.latest[subject]) gradesFinal.latest[subject] = [];
           gradesFinal.latest[subject].push(grade);
         }
+      }
+      if (getMostRecent) {
+        if (!mostRecent) mostRecent = grade;
+        else {
+          if (moment(grade.date).isAfter(moment(mostRecent.date)))
+            mostRecent = grade;
+        }
+        gradesFinal.mostRecent = { subject, grade: mostRecent };
       }
       gradesFinal[semester][subject].push(grade);
     });

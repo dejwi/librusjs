@@ -13,9 +13,10 @@ export interface Grade {
 }
 
 export interface Grades {
-  latest?: { [subject: string]: grade[] };
+  latest?: { [subject: string]: Grade[] };
+  mostRecent?: { subject: string; grade: Grade };
   [semester: string]: {
-    [subject: string]: grade[];
+    [subject: string]: Grade[];
   };
 }
 

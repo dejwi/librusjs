@@ -1,12 +1,14 @@
 import axios from "axios";
 import {
   CategoriesApi,
+  ClassroomsApi,
   CommentsApi,
   GradesApi,
   SubjectsApi,
   TeachersApi,
+  TimetablesApi,
 } from "./typesApi";
-import { Grade, Grades } from "./types";
+import { Grade, Grades, Timetable, TimetableLesson } from "./types";
 import moment from "moment";
 
 const isDaysAgo = (days: number, date: string) => {
@@ -20,6 +22,7 @@ const Librus = async (username: string, password: string) => {
   let teachersApi: TeachersApi | null = null;
   let categoriesApi: CategoriesApi | null = null;
   let commentsApi: CommentsApi | null = null;
+  let classroomsApi: ClassroomsApi | null = null;
 
   const login = async () => {
     const res = await axios.post(
@@ -102,6 +105,52 @@ const Librus = async (username: string, password: string) => {
     return gradesFinal;
   };
 
+  const getTimetable = async () => {
+    const data: TimetablesApi = await getApi("Timetables");
+    await Promise.all([fillSubjects(), fillClassrooms()]);
+
+    const timetableFinal: Timetable = {};
+
+    const getClassroom = (id: string) => {
+      return classroomsApi?.Classrooms.find(
+        (c) => c.Id.toString() === id.toString()
+      )?.Symbol as string;
+    };
+
+    // loop each day
+    Object.entries(data.Timetable).forEach((entry) => {
+      const [key, value] = entry;
+
+      const newLessons: TimetableLesson[] = value.map((e) => {
+        if (!e.length) return null;
+        const x = e[0];
+        const teacher = x.Teacher.FirstName + " " + x.Teacher.LastName;
+        const out: NonNullable<TimetableLesson> = {
+          name: x.Subject.Name,
+          lessonNo: x.LessonNo,
+          teacher,
+          room: "",
+          hourFrom: x.HourFrom,
+          hourTo: x.HourTo,
+          isCanceled: x.IsCanceled,
+          isSubstitutionClass: x.IsSubstitutionClass,
+        };
+        if (x.OrgClassroom)
+          out.room = getClassroom(x.OrgClassroom.Id.toString());
+        if (x.Classroom) out.room = getClassroom(x.Classroom.Id.toString());
+        if (x.IsSubstitutionClass) {
+          const subject = subjectsApi?.Subjects.find(
+            (s) => s.Id === x.OrgSubject?.Id
+          )?.Name as string;
+          out.original = subject;
+        }
+        return out;
+      });
+      timetableFinal[key] = newLessons;
+    });
+    return timetableFinal;
+  };
+
   const fillSubjects = async () => {
     if (subjectsApi) return;
     subjectsApi = await getApi("Subjects");
@@ -118,10 +167,14 @@ const Librus = async (username: string, password: string) => {
     if (commentsApi) return;
     commentsApi = await getApi("Grades/Comments");
   };
+  const fillClassrooms = async () => {
+    if (classroomsApi) return;
+    classroomsApi = await getApi("Classrooms");
+  };
 
   const init = await login();
   if (!init) throw new Error("Failed to auth");
-  else return { getGrades };
+  else return { getGrades, getApi, getTimetable };
 };
 
 export default Librus;

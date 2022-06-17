@@ -228,8 +228,7 @@ const Librus = async (username: string, password: string) => {
 
   const init = await login();
   if (!init) throw new Error("Failed to auth");
-  else
-    return { getGrades, getApi, getTimetable, getLuckyNumber, getAccountInfo };
+  else return { getGrades, getTimetable, getLuckyNumber, getAccountInfo };
 };
 
 export default Librus;

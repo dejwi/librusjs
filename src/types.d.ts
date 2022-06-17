@@ -18,3 +18,19 @@ export interface Grades {
     [subject: string]: grade[];
   };
 }
+
+export type TimetableLesson = {
+  name: string;
+  room: string;
+  lessonNo: string;
+  teacher: string;
+  hourFrom: string;
+  hourTo: string;
+  isCanceled: boolean;
+  isSubstitutionClass: boolean;
+  original?: string;
+} | null;
+
+export interface Timetable {
+  [day: string]: TimetableLesson[];
+}

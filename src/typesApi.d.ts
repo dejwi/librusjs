@@ -71,3 +71,49 @@ export interface CommentsApi {
     Text: string;
   }[];
 }
+
+type TimetablesApiEntry =
+  | [
+      {
+        Lesson: Id_Url;
+        Classroom?: Id_Url;
+        OrgClassroom?: Id_Url;
+        DateFrom: Id_Url;
+        DateTo: string;
+        LessonNo: string;
+        TimetableEntry: Id_Url;
+        DayNo: string;
+        Subject: { Id: string; Name: string; Short: string; Url: string };
+        Teacher: {
+          Id: string;
+          FirstName: string;
+          LastName: string;
+          Url: string;
+        };
+        IsSubstitutionClass: boolean;
+        IsCanceled: boolean;
+        SubstitutionNote?: any;
+        HourFrom: string;
+        HourTo: string;
+        VirtualClass: Id_Url;
+        VirtualClassName: string;
+        OrgSubject?: Id_Url;
+      }
+    ]
+  | [];
+
+export interface TimetablesApi {
+  Timetable: {
+    [date: string]: TimetablesApiEntry[];
+  };
+}
+
+export interface ClassroomsApi {
+  Classrooms: {
+    Id: number;
+    Name: string;
+    Symbol: string;
+    Size: number;
+    SchoolCommonRoom: boolean;
+  }[];
+}

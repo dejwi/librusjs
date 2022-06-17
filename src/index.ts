@@ -140,7 +140,7 @@ const Librus = async (username: string, password: string) => {
         if (x.Classroom) out.room = getClassroom(x.Classroom.Id.toString());
         if (x.IsSubstitutionClass) {
           const subject = subjectsApi?.Subjects.find(
-            (s) => s.Id === x.OrgSubject?.Id
+            (s) => s.Id.toString() === x.OrgSubject?.Id.toString()
           )?.Name as string;
           out.original = subject;
         }

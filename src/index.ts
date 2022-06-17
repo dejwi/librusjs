@@ -4,6 +4,7 @@ import {
   ClassroomsApi,
   CommentsApi,
   GradesApi,
+  SchoolFreeDaysApi,
   SubjectsApi,
   TeachersApi,
   TimetablesApi,
@@ -23,6 +24,7 @@ const Librus = async (username: string, password: string) => {
   let categoriesApi: CategoriesApi | null = null;
   let commentsApi: CommentsApi | null = null;
   let classroomsApi: ClassroomsApi | null = null;
+  let freeDaysApi: SchoolFreeDaysApi | null = null;
 
   const login = async () => {
     const res = await axios.post(
@@ -117,7 +119,7 @@ const Librus = async (username: string, password: string) => {
   const getTimetable = async (weekStart?: string) => {
     const url = weekStart ? `Timetables?weekStart=${weekStart}` : "Timetables";
     const data: TimetablesApi = await getApi(url);
-    await Promise.all([fillSubjects(), fillClassrooms()]);
+    await Promise.all([fillSubjects(), fillClassrooms(), fillFreeDays()]);
 
     const timetableFinal: Timetable = {};
 
@@ -131,6 +133,16 @@ const Librus = async (username: string, password: string) => {
     Object.entries(data.Timetable).forEach((entry) => {
       const [key, value] = entry;
 
+      // check if is a free day
+      let freeDayName = null;
+      freeDaysApi?.SchoolFreeDays.forEach((d) => {
+        if (moment(key).isBetween(d.DateFrom, d.DateTo, null, "[]"))
+          freeDayName = d.Name;
+      });
+      if (freeDayName)
+        return (timetableFinal[key] = { isFreeDay: true, name: freeDayName });
+
+      // loop each lesson
       const newLessons: TimetableLesson[] = value.map((e) => {
         if (!e.length) return null;
         const x = e[0];
@@ -156,6 +168,7 @@ const Librus = async (username: string, password: string) => {
         }
         return out;
       });
+
       timetableFinal[key] = newLessons;
     });
     return timetableFinal;
@@ -180,6 +193,10 @@ const Librus = async (username: string, password: string) => {
   const fillClassrooms = async () => {
     if (classroomsApi) return;
     classroomsApi = await getApi("Classrooms");
+  };
+  const fillFreeDays = async () => {
+    if (freeDaysApi) return;
+    freeDaysApi = await getApi("SchoolFreeDays");
   };
 
   const init = await login();

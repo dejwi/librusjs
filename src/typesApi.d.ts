@@ -117,3 +117,12 @@ export interface ClassroomsApi {
     SchoolCommonRoom: boolean;
   }[];
 }
+
+export interface SchoolFreeDaysApi {
+  SchoolFreeDays: {
+    Id: number;
+    Name: string;
+    DateFrom: string;
+    DateTo: string;
+  }[];
+}

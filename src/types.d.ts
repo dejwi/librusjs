@@ -32,6 +32,11 @@ export type TimetableLesson = {
   original?: string;
 } | null;
 
+export interface TimetableFreeDay {
+  isFreeDay: true;
+  name: string;
+}
+
 export interface Timetable {
-  [day: string]: TimetableLesson[];
+  [day: string]: TimetableLesson[] | TimetableFreeDay;
 }

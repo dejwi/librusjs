@@ -105,8 +105,9 @@ const Librus = async (username: string, password: string) => {
     return gradesFinal;
   };
 
-  const getTimetable = async () => {
-    const data: TimetablesApi = await getApi("Timetables");
+  const getTimetable = async (weekStart?: string) => {
+    const url = weekStart ? `Timetables?weekStart=${weekStart}` : "Timetables";
+    const data: TimetablesApi = await getApi(url);
     await Promise.all([fillSubjects(), fillClassrooms()]);
 
     const timetableFinal: Timetable = {};

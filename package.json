@@ -14,7 +14,9 @@
   "keywords": [
     "librus",
     "api",
-    "typescript"
+    "typescript",
+    "nodejs",
+    "react native"
   ],
   "author": "Dawid Krasowski",
   "license": "MIT",

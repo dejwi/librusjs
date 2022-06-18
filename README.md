@@ -1,4 +1,4 @@
-# librus-api
+# librusjs
 
 [![npm](https://img.shields.io/npm/v/librusjs.svg?style=flat)](https://www.npmjs.com/package/librusjs)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](http://opensource.org/licenses/MIT)

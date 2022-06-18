@@ -1,6 +1,6 @@
 # librus-api
 
-[![npm](https://img.shields.io/npm/v/librusjs.svg?style=flat)](https://www.npmjs.com/package/librus-api)
+[![npm](https://img.shields.io/npm/v/librusjs.svg?style=flat)](https://www.npmjs.com/package/librusjs)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](http://opensource.org/licenses/MIT)
 
 Javascript library to interact with librus api, and present complete data in nice way

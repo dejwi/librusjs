@@ -11,7 +11,11 @@
     "type": "git",
     "url": "git+https://github.com/dejwi/librusjs.git"
   },
-  "keywords": [],
+  "keywords": [
+    "librus",
+    "api",
+    "typescript"
+  ],
   "author": "Dawid Krasowski",
   "license": "MIT",
   "bugs": {
@@ -26,7 +30,6 @@
     "moment": "^2.29.3"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
     "typescript": "^4.7.3"
   }
 }

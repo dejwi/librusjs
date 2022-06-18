@@ -7,7 +7,9 @@ Javascript library to interact with librus api, and present complete data in nic
 
 ## FULL TYPESCRIPT SUPPORT!
 
-only uses axios and moment so should work everywhere
+doesnt work in browser because of cors
+
+tested and works in node and react native
 
 ## Installation:
 
